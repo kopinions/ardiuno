@@ -23,11 +23,23 @@ void lcd_write_data(byte data)
   digitalWrite(sce, HIGH);
 }
 
+void lcd_write_string(char * string) {
+  while(*string) {
+    lcd_write_char(*string++);
+  }
+  lcd_write_data(0x00);
+}
+
 void lcd_write_char(char c){
   for(int i=0; i< 5; i++) {
     lcd_write_data(ASCII[c-0x20][i]);
   }
   lcd_write_data(0x00);
+}
+
+void lcd_set_xy(int x, int y) {
+  lcd_write_cmd(0x40 | y);
+  lcd_write_cmd(0x80 | x);
 }
 
 
@@ -50,9 +62,8 @@ void setup(){
   {
     lcd_write_data(0x00);
   }
-  lcd_write_char(0x41);
-    lcd_write_char(0x3c);
-  lcd_write_char(0x3e);
+  lcd_set_xy(2,2);
+  lcd_write_string("Hello World");
 }
 
 void loop(){
