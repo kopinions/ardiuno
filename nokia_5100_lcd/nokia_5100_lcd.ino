@@ -1,3 +1,5 @@
+#include "font.h"
+
 int reset = 0;
 int sce = 1;
 int dc = 2;
@@ -13,13 +15,28 @@ void lcd_write_cmd(byte cmd)
   digitalWrite(sce, HIGH);
 }
 
+void lcd_write_data(byte data)
+{
+  digitalWrite(dc, HIGH);
+  digitalWrite(sce, LOW);
+  shiftOut(din, clk, MSBFIRST, data);
+  digitalWrite(sce, HIGH);
+}
+
+void lcd_write_char(char c){
+  for(int i=0; i< 5; i++) {
+    lcd_write_data(ASCII[c-0x20][i]);
+  }
+  lcd_write_data(0x00);
+}
+
+
 void setup(){
   pinMode(reset, OUTPUT);
   pinMode(sce, OUTPUT);
   pinMode(dc, OUTPUT);
   pinMode(din, OUTPUT);
   pinMode(clk, OUTPUT);
-  delay(1000);
   digitalWrite(reset, LOW);
   digitalWrite(reset, HIGH);
   
@@ -28,7 +45,14 @@ void setup(){
   lcd_write_cmd(0x04);
   lcd_write_cmd(0x14);
   lcd_write_cmd(0x20);
-  lcd_write_cmd(0x09);
+  lcd_write_cmd(0x0c);
+  for(int i=0; i<504; i++)
+  {
+    lcd_write_data(0x00);
+  }
+  lcd_write_char(0x41);
+    lcd_write_char(0x3c);
+  lcd_write_char(0x3e);
 }
 
 void loop(){
